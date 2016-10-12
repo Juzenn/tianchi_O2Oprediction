@@ -7,9 +7,12 @@ This is a temporary script file.
 #%%
 import pandas as pd
 
-trainOn = pd.read_csv(r'C:\Users\Administrator\Desktop\o2o coupon\ccf_online_stage1_train.csv',sep=',',header=None)
-trainOff = pd.read_csv(r'C:\Users\Administrator\Desktop\o2o coupon\ccf_offline_stage1_train.csv',sep=',',header=None)
-testOff = pd.read_csv(r'C:\Users\Administrator\Desktop\o2o coupon\ccf_offline_stage1_test.csv',sep=',',header=None)
+path0='E:\Downloads\ccf_data'
+# path0= 'C:\Users\Administrator\Desktop\o2o coupon'
+
+trainOn = pd.read_csv(path0+r'\ccf_online_stage1_train.csv',sep=',',header=None)
+trainOff = pd.read_csv(path0+r'\ccf_offline_stage1_train.csv',sep=',',header=None)
+testOff = pd.read_csv(path0+r'\ccf_offline_stage1_test.csv',sep=',',header=None)
 
 #%%
 trainOff = trainOff[trainOff[2] != 'null']
@@ -19,6 +22,7 @@ trainOff_buy = trainOff[trainOff[6] != 'null']
 grouped = trainOff_buy.groupby(trainOff_buy[0])
 A = grouped.size()
 A_B = (A/B).replace('NaN',0)
+
 
 import matplotlib.pyplot as plt
 fig = plt.figure()
@@ -59,7 +63,7 @@ fig = plt.figure()
 ax = fig.add_subplot(111)
 ax.scatter(list(relation_on_distance2.index),prob_on_distance)
 plt.show()
-#%% 1/(distance+c) c=1
+#%% 1/(distance+c) c=0.5
 a = 1/(array(relation_on_distance2.index).astype('float')+0.5)
 fig = plt.figure()
 ax = fig.add_subplot(111)
@@ -89,19 +93,88 @@ trainOff_rate =trainOff[trainOff[3] != 'null']
 trainOff_rate =trainOff_rate[trainOff_rate[3] != 'fixed']
 
 def rate_change(i):
-    a=pd.Series(i.split(':')).astype('float')
+    a=i.split(':')
     if len(a)==2:
-        return 1-a[1]/a[0]
+        return 1-float(a[1])/float(a[0])
     else:
-        return a[0]
+        return float(a[0])
         
 def rate_level(i):
-    a=pd.Series(i.split(':')).astype('float')
+    a=i.split(':')
     if len(a)==2:
-        return a[0]
+        return int(a[0])
+    else:
+        return 0
+        
+def rate_minus(i):
+    a=i.split(':')
+    if len(a)==2:
+        return int(a[1])
     else:
         return 0
 
 trainOff_rate['rate_change']=trainOff_rate[3].apply(rate_change)
 trainOff_rate['rate_level']=trainOff_rate[3].apply(rate_level)
+trainOff_rate['rate_minus']=trainOff_rate[3].apply(rate_minus)
+
+#%% 1/(+c) c=0.5
+import pandas as pd
+from numpy import *
+import math
+u=pd.merge(trainOff_rate,pd.DataFrame({'index':A_B.index,'A_B':A_B}),left_on=0,right_on='index')
+
+
+D = u.groupby('rate_level').size()
+uu = u[u[6] != 'null']
+C = uu.groupby('rate_level').size()
+
+def exp(i):
+    a=[]
+    for j in i:
+        a.append(math.exp(j))
+    return pd.Series(a)
+
+def log(i):
+    a=[]
+    for j in i:
+        a.append(math.log(j))
+    return pd.Series(a)
+
+
+a1=pd.DataFrame({'A':D.index,'B':C/D})
+a2=a1.iloc[1:len(a1),:]
+fig = plt.figure()
+ax = fig.add_subplot(111)
+ax.scatter(list(log(1/(a2.A-5))),list(a2.B))
+plt.show()
+aaaa=u[u['rate_level'] == 300]
+
+#%% 去掉dist rate为空的：
+trainOff_rate_dist=trainOff_rate[trainOff_rate[4]!='null']
+trainOff_rate_dist[4]=trainOff_rate_dist[4].astype('int')
+grouped_rate_dist=trainOff_rate_dist.groupby([4,'rate_level'])
+count_grouped=grouped_rate_dist.size()
+aaa=pd.DataFrame(count_grouped.index)[0]
+def tupleout(x):
+    a=[]
+    b=[]
+    for i in x:
+        a.append(i[0])
+        b.append(i[1])
+    c=pd.DataFrame({'distance':a,'rate_level':b})
+    return c
+
+
+
+uu1=trainOff_rate_dist[trainOff_rate_dist[6]!='null']
+count_grouped_1=uu1.groupby([4,'rate_level']).size()
+pab_grouped=count_grouped_1/count_grouped
+
+oooo=tupleout(aaa)
+oooo['aaa']=aaa
+result_dist_rate=pd.merge(oooo,pd.DataFrame({'pab':pab_grouped,'aaa':pab_grouped.index}),on='aaa')
+del result_dist_rate['aaa']
+result_dist_rate.to_csv('aaa.txt',index=False)
+
+#%%
 

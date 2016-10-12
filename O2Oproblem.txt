@@ -43,16 +43,20 @@ Probability	15天内用券概率，由参赛选手给出
 
 
 
-Table 1: 用户线下消费和优惠券领取行为
-['User_id'.'Merchant_id'.'Coupon_id'.'Discount_rate'.'Distance'.'Date_received'.'Date']
+Table 1: ## trainOff ## 用户线下消费和优惠券领取行为 
+[0        ,1            ,2          ,3              ,4         ,5              ,6     ]
+['User_id','Merchant_id','Coupon_id','Discount_rate','Distance','Date_received','Date']
 
-Table 2: 用户线上点击/消费和优惠券领取行为
-['User_id'.'Merchant_id'.'Action'.'Coupon_id'.'Discount_rate'.'Date_received'.'Date']
+Table 2: ## trainon ## 用户线上点击/消费和优惠券领取行为
+[0        ,1            ,2       ,3          ,4              ,5              ,6     ]
+['User_id','Merchant_id','Action','Coupon_id','Discount_rate','Date_received','Date']
 
-Table 3：用户O2O线下优惠券使用预测样本
-['User_id'.'Merchant_id'.'Coupon_id'.'Discount_rate'.'Distance'.'Date_received']
+Table 3：## testoff ## 用户O2O线下优惠券使用预测样本
+[0        ,1            ,2          ,3              ,4         ,5              ]
+['User_id','Merchant_id','Coupon_id','Discount_rate','Distance','Date_received']
 
 Table 4：选手提交文件字段，其中user_id,coupon_id和date_received均来自Table 3,而Probability为预测值
-['User_id'.'Coupon_id'.'Date_received'.'Probability']
+[0        ,1          ,2              ,3            ]
+['User_id','Coupon_id','Date_received','Probability']
 
 new to git
