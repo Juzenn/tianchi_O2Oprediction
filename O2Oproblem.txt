@@ -60,3 +60,35 @@ Table 4：选手提交文件字段，其中user_id,coupon_id和date_received均�
 ['User_id','Coupon_id','Date_received','Probability']
 
 new to git
+
+Table 1: ## trainOff ## 用户线下消费和优惠券领取行为 
+0        User_id
+1    Merchant_id
+2      Coupon_id
+3  Discount_rate
+4       Distance
+5  Date_received
+6           Date
+
+Table 2: ## trainon ## 用户线上点击/消费和优惠券领取行为
+0        User_id
+1    Merchant_id
+2         Action
+3      Coupon_id
+4  Discount_rate
+5  Date_received
+6           Date
+
+Table 3：## testoff ## 用户O2O线下优惠券使用预测样本
+0        User_id
+1    Merchant_id
+2      Coupon_id
+3  Discount_rate
+4       Distance
+5  Date_received
+
+Table 4：选手提交文件字段，其中user_id,coupon_id和date_received均来自Table 3,而Probability为预测值
+0        User_id
+1      Coupon_id
+2  Date_received
+3    Probability
