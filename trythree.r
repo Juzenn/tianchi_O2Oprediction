@@ -80,3 +80,33 @@ ytestpred<-1/(1+exp(-Xtest%*%glmlogit$coefficients))
 datatestpred<-data.frame(User_id=datatest$X0,Coupon_id=datatest$X2,Date_received=datatest$X5,Probability=ytestpred)
 
 write.csv(datatestpred,'datatestpred.csv',row.names =F)
+
+
+### delete _nfindr==1, a new estimation
+# data_d<-data[data$X_nfindr==0,]
+# y_d<-data_d$X_y
+# notdist_d<-data_d$X_nfindd
+# ratelevel_d<-data_d$rate_level
+# ratechange_d<-data_d$rate_change
+# rateminus_d<-data_d$rate_minus
+# distance_d<-data_d$X4
+# X_d<-cbind(notdist_d,ratelevel_d,distance_d)
+# 
+# summary(lm(y_d~X_d))
+# vif(lm(y_d~notdist_d+ratelevel_d+distance_d))
+# 
+# glmlogit_d0<-glm(y_d~X_d,family=binomial(link="logit"))
+# summary(glmlogit_d0)
+# 
+# glmlogit_d<-glm(y_d~notdist_d+log(ratelevel_d+65)+log(distance_d+0.4),family=binomial(link="logit"))
+# summary(glmlogit_d)
+# 
+# X1_d<-cbind(1,notdist_d,log(ratelevel_d+65),log(distance_d+0.4))
+# yp_d<-1/(1+exp(-X1_d%*%glmlogit_d$coefficients))
+# data0_d<-data.frame(yp=yp_d,data_d)
+# coupon_d<-unique(data0_d$X2)
+# 
+# auc0_d<-couponauc(coupon_d,data0_d)
+# mean(auc0_d)
+
+

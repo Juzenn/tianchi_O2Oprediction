@@ -46,7 +46,7 @@ path0='E:\Downloads\ccf_data'
 
 trainoff = pd.read_csv(path0+r'\ccf_offline_stage1_train.csv',sep=',',header=None)
 trainon  = pd.read_csv(path0+r'\ccf_online_stage1_train.csv', sep=',',header=None)
-testoff  = pd.read_csv(path0+r'\ccf_offline_stage1_test.csv', sep=',',header=None)
+testoff = pd.read_csv(path0+r'\ccf_offline_stage1_test_revised.csv', sep=',',header=None)
 
 
 #%%
