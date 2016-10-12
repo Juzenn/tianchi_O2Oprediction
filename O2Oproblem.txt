@@ -1,4 +1,4 @@
-Table 1: 用户线下消费和优惠券领取行为
+﻿Table 1: 用户线下消费和优惠券领取行为
 Field 	
 Description
 User_id	用户ID
@@ -54,3 +54,5 @@ Table 3：用户O2O线下优惠券使用预测样本
 
 Table 4：选手提交文件字段，其中user_id,coupon_id和date_received均来自Table 3,而Probability为预测值
 ['User_id'.'Coupon_id'.'Date_received'.'Probability']
+
+new to git
