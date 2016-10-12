@@ -1,8 +1,9 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
 Created on Sat Oct  8 16:26:01 2016
 
 @author: yanpan
+@user: huhuiqi
 """
 #%%
 import pandas as pd
