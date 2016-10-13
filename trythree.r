@@ -24,6 +24,7 @@ vif(lm(y~notdist+notrate+ratelevel+distance))
 glmlogit<-glm(y~notdist+notrate+log(ratelevel+65)+log(distance+0.4),family=binomial(link="logit"))
 summary(glmlogit)
 
+
 X1<-cbind(1,notdist,notrate,log(ratelevel+65),log(distance+0.4))
 yp<-1/(1+exp(-X1%*%glmlogit$coefficients))
 
@@ -63,14 +64,20 @@ mean(auc0)
 auc0index<-which(auc0==0)
 coupon[auc0index[1]]
 auc0index3396<-data0$X2==coupon[auc0index[1]]
+data0[auc0index3396,]
 yp13396<-data0$yp[auc0index3396]
 y13396<-data0$X_y[auc0index3396]
+
+plot(auc0,coupon)
+
+# data0goodcoupon<-data0[sapply(data0$X2,function(x){x%in%coupon[auc0index]}),]
 
 
 data0goodrate<-data0[data0$X_nfindr==0,]
 coupongoodrate<-unique(data0goodrate$X2)
 auc0goodrate<-couponauc(coupongoodrate,data0goodrate)
 mean(auc0goodrate)
+
 
 
 datatest<-read.table('testoff_result_logistic.txt',header=T,sep=',')
@@ -110,3 +117,39 @@ write.csv(datatestpred,'datatestpred.csv',row.names =F)
 # mean(auc0_d)
 
 
+
+
+# predict a subset of trainoff
+subsetindex<-floor(runif(floor(0.15*nrow(data0goodrate)),min=1,max=nrow(data0goodrate)))
+subsetdata0g<-data0goodrate[subsetindex,]
+Rsubsetdata0g<-data0goodrate[-subsetindex,]
+
+Rssy<-Rsubsetdata0g$X_y
+Rssnotdist<-Rsubsetdata0g$X_nfindd
+Rssratelevel<-Rsubsetdata0g$rate_level
+Rssratechange<-Rsubsetdata0g$rate_change
+Rssrateminus<-Rsubsetdata0g$rate_minus
+Rssdistance<-Rsubsetdata0g$X4
+
+RssX_d<-cbind(Rssnotdist,Rssratelevel,Rssratechange,Rssrateminus,Rssdistance)
+
+summary(lm(Rssy~Rssnotdist+log(Rssratelevel+60)+Rssratechange+log(Rssdistance+0.4)))
+#(unique(Rsubsetdata0g$X2),Rsubsetdata0g)
+vif(lm(Rssy~Rssnotdist+log(Rssratelevel+60)+Rssratechange+log(Rssdistance+0.4)))
+
+Rssglmlogit<-glm(Rssy~Rssnotdist+log(Rssratelevel+65)+Rssratechange+log(Rssdistance+0.4),family=binomial(link="logit"))
+summary(Rssglmlogit)
+
+RssX_d1<-cbind(1,Rssnotdist,log(Rssratelevel+65),Rssratechange,log(Rssdistance+0.4))
+Rssyd<-1/exp(-RssX_d1%*%Rssglmlogit$coefficients)
+Rssdataauc<-data.frame(yp=Rssyd,Rsubsetdata0g[,2:length(Rsubsetdata0g)])
+Rsscoupon<-unique(Rssdataauc$X2)
+
+mean(couponauc(Rsscoupon,Rssdataauc))
+
+
+ssX_d1<-cbind(1,subsetdata0g$X_nfindd,log(subsetdata0g$rate_level+65),subsetdata0g$rate_change,log(subsetdata0g$X4+0.4))
+ssyd<-1/exp(-ssX_d1%*%Rssglmlogit$coefficients)
+ssdataauc<-data.frame(yp=ssyd,subsetdata0g[,2:length(subsetdata0g)])
+sscoupon<-unique(ssdataauc$X2)
+mean(couponauc(sscoupon,subsetdata0g))
