@@ -9,7 +9,7 @@ import pandas as pd
 
 trainOn = pd.read_csv(r'C:\Users\Administrator\Desktop\o2o coupon\ccf_online_stage1_train.csv',sep=',',header=None)
 trainOff = pd.read_csv(r'C:\Users\Administrator\Desktop\o2o coupon\ccf_offline_stage1_train.csv',sep=',',header=None)
-testOff = pd.read_csv(r'C:\Users\Administrator\Desktop\o2o coupon\ccf_offline_stage1_test.csv',sep=',',header=None)
+testOff = pd.read_csv(r'C:\Users\Administrator\Desktop\o2o coupon\ccf_offline_stage1_test_revised.csv',sep=',',header=None)
 
 #%%
 trainOff = trainOff[trainOff[2] != 'null']
@@ -96,7 +96,7 @@ def rate_change(i):
         return a[0]
         
 def rate_level(i):
-    a=pd.Series(i.split(':')).astype('float')
+    a=array(i.split(':'))
     if len(a)==2:
         return a[0]
     else:
@@ -105,3 +105,42 @@ def rate_level(i):
 trainOff_rate['rate_change']=trainOff_rate[3].apply(rate_change)
 trainOff_rate['rate_level']=trainOff_rate[3].apply(rate_level)
 
+#%%没用
+from numpy import *
+trainOff_havecoupon = trainOff[trainOff[2] != 'null']
+trainOff_havecoupon[3] = trainOff_havecoupon[3].apply(rate_level)
+trainOff_havecoupon = trainOff_havecoupon[trainOff_havecoupon[3] != 0]
+trainOff_havecoupon_hdist = trainOff_havecoupon[trainOff_havecoupon[4] != 'null']
+del trainOff_havecoupon_hdist[0]
+del trainOff_havecoupon_hdist[1]
+del trainOff_havecoupon_hdist[2]
+del trainOff_havecoupon_hdist[5]
+l = []
+for i in trainOff_havecoupon_hdist[6]:
+    if i == 'null':
+        l.append(0)
+    else:
+        l.append(1)
+trainOff_havecoupon_hdist[7] = l
+del trainOff_havecoupon_hdist[6]
+
+
+
+#%%很没劲啊
+grouped = trainOn[trainOn[2] == 1].groupby(0)
+count_user = grouped.size()
+count_user1 = pd.DataFrame(count_user)
+count_user1[1] = count_user.index
+look = pd.merge(trainOff,count_user1,left_on=0,right_on=1)
+pd.Series('null' in trainOn[6][trainOn[0]==2914311]).astype('int').cumsum()
+look = look.replace('null',NaN)
+look1 = look.groupby(0).count()
+look1['user']=look1.index
+
+a = pd.merge(look1,count_user1,left_on='user',right_on=1)
+b = pd.DataFrame({'huhuiqi':a[6],'py':a[0]})
+import matplotlib.pyplot as plt
+fig = plt.figure()
+ax = fig.add_subplot(111)
+ax.scatter(1/a[6],(a[0]))
+plt.show()
