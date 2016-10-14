@@ -1,7 +1,11 @@
+# AB~5.511280-1.704018*log(rate_level+65)-0.578861*log(distance+0.4)
+# AB: (Coupon_id>0)*(distance>0)
+
 setwd('C:\\Users\\yanpan\\Desktop')
 data<-read.table('trainoff_result_logistic.txt',header=T,sep=',')
 
-y<-data$X_y
+y<-(data$X_y>0)*(data$X2>0)
+data$X_y<-y
 notdist<-data$X_nfindd
 notrate<-data$X_nfindr
 ratechange<-data$rate_change
@@ -12,6 +16,46 @@ X<-cbind(notdist,notrate,ratelevel,distance)
 
 lmrude<-lm(y~X)
 summary(lmrude)
+
+data_n<-data[data$X_nfindr==0,]
+summary(lm(data_n$X_y~data_n$X_nfindd+log(data_n$rate_level+40)+data_n$rate_change+log(data_n$X4+0.4)))
+
+
+y<-(data$X_y>0)*(data$X2>0)
+data$X_y<-y
+data1<-data[data$X_nfindr==0,]
+data2<-data1[data1$X4>0,]
+summary(lm(data2$X_y~data2$rate_level+data2$X4))
+
+glmlogit0<-glm(data2$X_y~log(data2$rate_level+65)+log(data2$X4+0.4),family=binomial(link="logit"))
+summary(glmlogit0)
+
+#############
+X1<-cbind(1,log(data2$rate_level+65),log(data2$X4+0.4))
+yp<-1/(1+exp(-X1%*%glmlogit0$coefficients))
+
+data20<-cbind(yp,data2)
+coupon<-unique(data20$X2)
+mean(couponauc(coupon, data20))
+
+#############
+
+datatest<-read.table('testoff_result_logistic.txt',header=T,sep=',')
+Xtest<-cbind(1,log(datatest$rate_level+65),log(datatest$X4+0.4))
+ytestp<-1/(1+exp(-Xtest%*%glmlogit0$coefficients))
+
+
+datatestpred<-data.frame(User_id=datatest$X0,Coupon_id=datatest$X2,Date_received=datatest$X5,Probability=ytestp)
+
+write.csv(datatestpred,'datatestpred.csv',row.names =F)
+
+
+
+
+
+
+############
+
 hist(lmrude$residuals,50)
 cor(X)
 #install.packages('car')
@@ -90,31 +134,31 @@ write.csv(datatestpred,'datatestpred.csv',row.names =F)
 
 
 ### delete _nfindr==1, a new estimation
-# data_d<-data[data$X_nfindr==0,]
-# y_d<-data_d$X_y
-# notdist_d<-data_d$X_nfindd
-# ratelevel_d<-data_d$rate_level
-# ratechange_d<-data_d$rate_change
-# rateminus_d<-data_d$rate_minus
-# distance_d<-data_d$X4
-# X_d<-cbind(notdist_d,ratelevel_d,distance_d)
+data_d<-data[data$X_nfindr==0,]
+y_d<-data_d$X_y
+notdist_d<-data_d$X_nfindd
+ratelevel_d<-data_d$rate_level
+ratechange_d<-data_d$rate_change
+rateminus_d<-data_d$rate_minus
+distance_d<-data_d$X4
+X_d<-cbind(notdist_d,ratelevel_d,distance_d)
 # 
-# summary(lm(y_d~X_d))
-# vif(lm(y_d~notdist_d+ratelevel_d+distance_d))
+summary(lm(y_d~X_d))
+vif(lm(y_d~notdist_d+ratelevel_d+distance_d))
 # 
-# glmlogit_d0<-glm(y_d~X_d,family=binomial(link="logit"))
-# summary(glmlogit_d0)
+glmlogit_d0<-glm(y_d~X_d,family=binomial(link="logit"))
+summary(glmlogit_d0)
 # 
-# glmlogit_d<-glm(y_d~notdist_d+log(ratelevel_d+65)+log(distance_d+0.4),family=binomial(link="logit"))
+glmlogit_d<-glm(y_d~notdist_d+log(ratelevel_d+65)+log(distance_d+0.4),family=binomial(link="logit"))
 # summary(glmlogit_d)
 # 
-# X1_d<-cbind(1,notdist_d,log(ratelevel_d+65),log(distance_d+0.4))
-# yp_d<-1/(1+exp(-X1_d%*%glmlogit_d$coefficients))
-# data0_d<-data.frame(yp=yp_d,data_d)
-# coupon_d<-unique(data0_d$X2)
+X1_d<-cbind(1,notdist_d,log(ratelevel_d+65),log(distance_d+0.4))
+yp_d<-1/(1+exp(-X1_d%*%glmlogit_d$coefficients))
+data0_d<-data.frame(yp=yp_d,data_d)
+coupon_d<-unique(data0_d$X2)
 # 
-# auc0_d<-couponauc(coupon_d,data0_d)
-# mean(auc0_d)
+auc0_d<-couponauc(coupon_d,data0_d)
+mean(auc0_d)
 
 
 
