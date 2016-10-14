@@ -41,7 +41,8 @@ Table 4：选手提交文件字段，其中user_id,coupon_id和date_received均�
 2  Date_received
 3    Probability
 '''
-path0='E:\Downloads\ccf_data'
+path0='C:\Users\Administrator\Desktop\o2o coupon'
+#'E:\Downloads\ccf_data'
 # path0= 'C:\Users\Administrator\Desktop\o2o coupon'
 
 trainoff = pd.read_csv(path0+r'\ccf_offline_stage1_train.csv',sep=',',header=None)
@@ -94,10 +95,10 @@ testoff['_nfindd']=(testoff[4]=='null').astype('int')
 
 #%%
 trainoff_result=trainoff.replace('nan',0).replace('null',0)
-trainoff_result.to_csv('trainoff_result_logistic.txt',index=False)
+trainoff_result.to_csv(r'C:\Users\Administrator\Desktop\trainoff_result_logistic.txt',index=False)
 
 testoff_result=testoff.replace('nan',0).replace('null',0)
-testoff_result.to_csv('testoff_result_logistic.txt',index=False)
+testoff_result.to_csv(r'C:\Users\Administrator\Desktop\testoff_result_logistic.txt',index=False)
 #%%
 from sklearn.linear_model import LogisticRegression 
 import numpy as np
