@@ -25,13 +25,12 @@ y<-(data$X_y>0)*(data$X2>0)
 data$X_y<-y
 data1<-data[data$X_nfindr==0,]
 data2<-data1[data1$X4>0,]
-summary(lm(data2$X_y~data2$rate_level+data2$X4))
+#summary(lm(data2$X_y~data2$rate_level+data2$X4))
 
-glmlogit0<-glm(data2$X_y~log(data2$rate_level+65)+log(data2$X4+0.4),family=binomial(link="logit"))
+glmlogit0<-glm(data2$X_y~data2$rate_level+data2$X4,family=binomial(link="logit"))
 summary(glmlogit0)
-
 #############
-X1<-cbind(1,log(data2$rate_level+65),log(data2$X4+0.4))
+X1<-cbind(1,data2$rate_level,data2$X4)
 yp<-1/(1+exp(-X1%*%glmlogit0$coefficients))
 
 data20<-cbind(yp,data2)
@@ -45,12 +44,18 @@ Xtest<-cbind(1,log(datatest$rate_level+65),log(datatest$X4+0.4))
 ytestp<-1/(1+exp(-Xtest%*%glmlogit0$coefficients))
 
 
-datatestpred<-data.frame(User_id=datatest$X0,Coupon_id=datatest$X2,Date_received=datatest$X5,Probability=ytestp)
+datatestpred1<-data.frame(User_id=datatest$X0,Coupon_id=datatest$X2,Date_received=datatest$X5,Probability=ytestp)
 
-write.csv(datatestpred,'datatestpred.csv',row.names =F)
+write.csv(datatestpred1,'datatestpred1.csv',row.names =F)
 
 
+######################################## ols
+dataset<-data.frame(distance=data$X4,rate_level=data$rate_level,y=data$X_y)
+datasetag<-aggregate(y~distance+rate_level,data=dataset,FUN='mean')
+summary(lm(datasetag$y~log(datasetag$distance+0.37598)+log(datasetag$rate_level+13.06200)))
 
+merge(datasetag,dataols)
+#########################################
 
 
 
